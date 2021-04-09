@@ -215,6 +215,10 @@ textarea {
   transition-duration: 0.25s;
 }
 
+.take_btn{
+  display:none;
+}
+
 .round_title{
   cursor: default;
 }

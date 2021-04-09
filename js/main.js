@@ -9,6 +9,7 @@ const app = {
     ,difficulty:1
     ,requiredPercentage:0
     ,d:document
+    ,randomList:[]
 }
 
 loadGame();
@@ -27,57 +28,174 @@ function loadMainScreenGUI(){
     
 }
 
-app.d.getElementById("easyBtn").addEventListener("click", startGame);
-app.d.getElementById("normalBtn").addEventListener("click", startGame);
-app.d.getElementById("hardBtn").addEventListener("click", startGame);
+app.d.getElementById("1").addEventListener("click", startGame);
+app.d.getElementById("2").addEventListener("click", startGame);
+app.d.getElementById("3").addEventListener("click", startGame);
 
 function startGame(difficultyNbr){
-    app.difficulty = difficultyNbr;
+
+    app.difficulty = difficultyNbr.target.id;
     app.d.getElementById("main_menu").style.display = "none";
     app.d.getElementById("game_screen").style.display = "block";
     createBoardOnScreen(app.round,app.difficulty);
 }
 
-// createBoardOnScreen();  This will run on a difficulty button button click or Take button.  1,2 or 3 difficulty value will be passed in.
-//      Also show buttons: "Main Menu", "Restart"
-//      Show Title "Round " and which round you are in.
-
-
-// boxClicked()  Pass which box this is and the value.  Depending on the value, the selected box and other boxes are removed.
-// takeClicked() Pass in the value (if the number of box is less than the value, take the number of boxes).
-//      Remove all boxes.  Call CreateBoardOnScreen() with next round numbers.
 
 // Round 4 is done, run checkResults() to see if you won or not depending on difficulty.  Show score out of 22.  Win or Loose results.  Show "Return to Main Menu" button.
 
 function createBoardOnScreen(round,difficulty){
-    // Create the array with empty values.
     let _boardSize = app.boardSize;
     let boardLength = _boardSize * _boardSize;
     let _round = round;
     let _difficulty = difficulty;
-    let randomNbr = 0;
     let sortedList = [];
-    let randomList = [];
+    app.randomList = [];
 
+    createRoundTitle(_round);
+    sortedList = createSortedList(sortedList, boardLength, _boardSize, _round);
+    app.randomList = createRandomArray(boardLength, sortedList, _round);
+    createBoardBoxes();
+}
+
+
+function firstTimeBoxClicked(boxValue){
+    let boxStyle = boxValue.target.style;
+    let takeButton = document.getElementById("take_btn");
+    let boxId = boxValue.target.id;
+    let boxElement = document.getElementById(boxId);
+
+    boxStyle.backgroundColor = "white";
+    boxStyle.color = "black";
+    boxStyle.zIndex = "10";
+    takeButton.style.display = "block";
+
+    makeAllOtherBoxesUnclickable(boxValue);
+
+    boxElement.addEventListener("click", secondTimeBoxClicked);
+    takeButton.addEventListener("click", takeClicked);
+}
+
+
+function secondTimeBoxClicked(boxValue){
+    let _round = app.round;
+    let boxValueId = boxValue.target.id;
+    let boxElement = document.getElementById(boxValueId);
+    let boxNbrValue = boxValue.toElement.p;
+    let boxCurrentAmount = 0;
+    let randomNumber;
+    let randomElementId = 0;
+    let incrementNbr = 0;
+
+    console.log(boxElement);
+    if(boxNbrValue == 0){
+        //Make same box blacked out.
+        //Make all other boxes clickable again.
+    }
+    else if(boxNbrValue > 0){
+        boxElement.style.backgroundColor = "#F1B24A";
+        boxElement.textContent = "";
+        boxElement.id = "d"+boxNbrValue;
+        boxNbrValue--;
+        
+        if(boxNbrValue > 0){
+            for(i=0;i<boxNbrValue;i++){
+                boxCurrentAmount = document.getElementById("game_box").children.length;
+                randomNumber = ((Math.floor(Math.random() * boxCurrentAmount)) + (_round - 1))
+
+                for(e=0;e<boxCurrentAmount;e++){ 
+                    randomElementId = document.getElementById("g"+randomNumber);
+                    if(randomElementId){
+                        makeBoxInvisible(randomElementId);
+                        boxNbrValue--;
+                        break;
+                    }
+                    else{
+                        for(j=1;j<boxCurrentAmount - randomNumber;j++){
+                            randomElementId = document.getElementById("g"+randomNumber - j);
+                            if(randomElementId){
+                                makeBoxInvisible(randomElementId);
+                                boxNbrValue--;
+                                break;
+                            }
+                        }
+                        for(o=1;i<randomNumber;o++){
+                            randomElementId = document.getElementById("g"+randomNumber + o);
+                            if(randomElementId){
+                                makeBoxInvisible(randomElementId);
+                                boxNbrValue--;
+                                break;
+                            }
+                        }
+                        
+                    }
+                    
+                    
+                }
+
+                console.log(randomNumber);
+                console.log(randomNumber);
+                // boxElement.remove();
+
+            }
+        }
+    }
+    // If box value > 0, remove the selected box.  If box value > 1 then loop and randomly select a box to remove.
+    // Make all existing boxes clickable again.  Make the take button disappear.
+
+}
+
+function takeClicked(boxValue){
+    app.round++;
+    // Save the score.
+    // Delete all boxes.
+    // If round not > 4, Repopulate the boxes with next round.
+    // Else, determine if you won or not.
+
+}
+
+function makeBoxInvisible(randomElementId){
+    randomElementId.style.backgroundColor = "#F1B24A";
+    randomElementId.textContent = "";
+    randomElementId.id = "d"+randomNumber;
+}
+
+function makeAllOtherBoxesUnclickable(boxValue){
+    let clickedBoxId = boxValue.target.id;
+    let boxes = [];
+    
+    for(i=0;i<boxValue.target.parentElement.childNodes.length;i++){
+        boxes.push(boxValue.target.parentElement.childNodes[i])
+    }
+
+    for(i=0;i<boxes.length;i++){
+        if(boxes[i].id != clickedBoxId){
+            document.getElementById(boxes[i].id).style.pointerEvents = "none"
+        }
+    }
+}
+
+function createRoundTitle(_round){
     let roundTitleEle = app.d.getElementById("round_title");
     let titleTxt = app.d.createTextNode("Round " + _round);
     roundTitleEle.appendChild(titleTxt);
+}
 
-    roundTitleEle
-
+function createSortedList(sortedList, boardLength, _boardSize, _round){
     for(i=0;i<boardLength;i++){
         if(i < boardLength / _boardSize){
-            sortedList.push(_round - 1)
+            sortedList.push(_round - 1);
         }
         else if((i >= (boardLength / _boardSize)) && (i < (boardLength / _boardSize) * 2)){
-            sortedList.push(_round)
+            sortedList.push(_round);
         }
         else if(i >= (boardLength / _boardSize) * 2){
-            sortedList.push(_round + 1)
+            sortedList.push(_round + 1);
         }
     }
+    return sortedList;
+}
 
-    let nbrDivision = ((100 / app.boardSize) * 0.01).toFixed(2);
+function createRandomArray(boardLength, sortedList, _round){
     let remainingNbrs = [];
 
     for(i=0;i<boardLength;i++){
@@ -93,22 +211,25 @@ function createBoardOnScreen(round,difficulty){
         for(e=0;e<app.boardSize;e++){
             foundNbr = getIndex(_round,e);
             if(randomNbr == e && sortedList.includes(foundNbr)){
-                transferIndexFromSortedToRandomList(foundNbr,sortedList,randomList);
+                transferIndexFromSortedToRandomList(foundNbr,sortedList);
                 break;
             }
         }
     }
+    return app.randomList;
+}
+
+function createBoardBoxes(){
 
     let node;
     let nodeTxt = "";
     let indexNbr = 0;
-    let btnClass = "";
     let btnInput;
-    
-    for(i=0;i<randomList.length;i++){
+
+    for(i=0;i<app.randomList.length;i++){
 
         node = app.d.createElement("div");
-        nodeTxt = app.d.createTextNode(randomList[i]);
+        nodeTxt = app.d.createTextNode(app.randomList[i]);
         node.appendChild(nodeTxt);
         app.d.getElementById("game_box").appendChild(node);
         indexNbr = i + 1;
@@ -117,14 +238,9 @@ function createBoardOnScreen(round,difficulty){
         node.id = btnIdClass
         
         btnInput = app.d.getElementById(btnIdClass);
-        btnInput.addEventListener("click", function(){clickBox(i)}, false);
-        btnInput.p = randomList[i];
+        btnInput.addEventListener("click", firstTimeBoxClicked);
+        btnInput.p = app.randomList[i];
     }
-}
-
-
-function clickBox(boxValue){
-    console.log("Box " + boxValue + " has been clicked.")
 }
 
 function getIndex(_round,section){
@@ -135,9 +251,9 @@ function onlyUnique(value, index, self){
     return self.indexOf(value) === index;
 }
 
-function transferIndexFromSortedToRandomList(foundNbr,sortedList,randomList){
+function transferIndexFromSortedToRandomList(foundNbr,sortedList){
     sortedList.splice(sortedList.indexOf(foundNbr),1);
-    randomList.push(foundNbr);
+    app.randomList.push(foundNbr);
 }
 
 function checkResults(){ // Pass in score and difficulty.
