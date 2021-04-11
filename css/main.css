@@ -201,7 +201,7 @@ textarea {
   display:none;
 }
 
-.take_btn, .round_title{
+.take_btn, .round_title, .current_score{
   margin:0 auto;
   width:200px;
   height:40px;
@@ -215,8 +215,12 @@ textarea {
   transition-duration: 0.25s;
 }
 
-.take_btn{
+.take_btn, .current_score{
   display:none;
+}
+
+.current_score{
+  margin-top:10px;
 }
 
 .round_title{

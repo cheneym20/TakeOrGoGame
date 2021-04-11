@@ -45,6 +45,8 @@ function createBoardOnScreen(round){
     let _boardSize = app.boardSize;
     let boardLength = _boardSize * _boardSize;
     let _round = round;
+    let scoreTitle = document.getElementById("current_score");
+    scoreTitle.style.display = "block";
     let sortedList = [];
     app.randomList = [];
 
@@ -52,6 +54,7 @@ function createBoardOnScreen(round){
     sortedList = createSortedList(sortedList, boardLength, _boardSize, _round);
     app.randomList = createRandomArray(boardLength, sortedList, _round);
     createBoardBoxes();
+
 }
 
 
@@ -83,6 +86,8 @@ function secondTimeBoxClicked(boxValue){
     let randomNumber;
     let randomElementId = 0;
     let boxList = [];
+
+    boxElement.classList.remove("clicked");
 
     if(boxNbrValue == 0){
         boxElement.style.backgroundColor = "#4D774E";
@@ -148,7 +153,10 @@ function takeClicked(){
 
     let boxTitle = document.getElementById("round_title");
     let clickedBox = document.getElementsByClassName("clicked")[0];
+    let scoreTitle = document.getElementById("current_score");
     app.score = app.score + parseInt(clickedBox.innerHTML);
+    scoreTitle.innerHTML = "Score " + app.score;
+
     boxTitle.innerHTML = "";
 
     removeAllChildNodes();
@@ -239,7 +247,7 @@ function createRandomArray(boardLength, sortedList, _round){
 
         for(e=0;e<app.boardSize;e++){
             foundNbr = getIndex(_round,e);
-            if(randomNbr == e && sortedList.includes(foundNbr)){
+            if(sortedList.includes(foundNbr)){
                 transferIndexFromSortedToRandomList(foundNbr,sortedList);
                 break;
             }
