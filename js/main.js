@@ -14,8 +14,6 @@ const app = {
 
 loadGame();
 
-
-
 function loadGame(){
     loadMainScreenGUI();
 }
@@ -37,17 +35,16 @@ function startGame(difficultyNbr){
     app.difficulty = difficultyNbr.target.id;
     app.d.getElementById("main_menu").style.display = "none";
     app.d.getElementById("game_screen").style.display = "block";
-    createBoardOnScreen(app.round,app.difficulty);
+    createBoardOnScreen(app.round);
 }
 
 
 // Round 4 is done, run checkResults() to see if you won or not depending on difficulty.  Show score out of 22.  Win or Loose results.  Show "Return to Main Menu" button.
 
-function createBoardOnScreen(round,difficulty){
+function createBoardOnScreen(round){
     let _boardSize = app.boardSize;
     let boardLength = _boardSize * _boardSize;
     let _round = round;
-    let _difficulty = difficulty;
     let sortedList = [];
     app.randomList = [];
 
@@ -63,6 +60,7 @@ function firstTimeBoxClicked(boxValue){
     let takeButton = document.getElementById("take_btn");
     let boxId = boxValue.target.id;
     let boxElement = document.getElementById(boxId);
+    boxElement.classList.add("clicked");
 
     boxStyle.backgroundColor = "white";
     boxStyle.color = "black";
@@ -84,76 +82,97 @@ function secondTimeBoxClicked(boxValue){
     let boxCurrentAmount = 0;
     let randomNumber;
     let randomElementId = 0;
-    let incrementNbr = 0;
+    let boxList = [];
 
-    console.log(boxElement);
     if(boxNbrValue == 0){
-        //Make same box blacked out.
-        //Make all other boxes clickable again.
+        boxElement.style.backgroundColor = "#4D774E";
+        boxElement.style.color = "#4D774E";
+        boxElement.removeEventListener("click", secondTimeBoxClicked);
+        boxElement.addEventListener("click", firstTimeBoxClicked);
     }
     else if(boxNbrValue > 0){
-        boxElement.style.backgroundColor = "#F1B24A";
-        boxElement.textContent = "";
-        boxElement.id = "d"+boxNbrValue;
+        makeBoxInvisible(boxElement,boxNbrValue);
         boxNbrValue--;
         
         if(boxNbrValue > 0){
             for(i=0;i<boxNbrValue;i++){
-                boxCurrentAmount = document.getElementById("game_box").children.length;
+                boxList = getListOfRemainingBoxes();
+                boxCurrentAmount = boxList.length;
                 randomNumber = ((Math.floor(Math.random() * boxCurrentAmount)) + (_round - 1))
+                if(randomNumber > 0) randomNumber--;
+                randomNumber = parseInt(boxList[randomNumber].replace("g",""));
+
+
 
                 for(e=0;e<boxCurrentAmount;e++){ 
                     randomElementId = document.getElementById("g"+randomNumber);
                     if(randomElementId){
-                        makeBoxInvisible(randomElementId);
+                        makeBoxInvisible(randomElementId,randomNumber);
                         boxNbrValue--;
-                        break;
+                        boxCurrentAmount = 0;
                     }
                     else{
                         for(j=1;j<boxCurrentAmount - randomNumber;j++){
                             randomElementId = document.getElementById("g"+randomNumber - j);
                             if(randomElementId){
-                                makeBoxInvisible(randomElementId);
+                                makeBoxInvisible(randomElementId,randomNumber);
                                 boxNbrValue--;
+                                boxCurrentAmount = 0;
                                 break;
                             }
                         }
                         for(o=1;i<randomNumber;o++){
                             randomElementId = document.getElementById("g"+randomNumber + o);
                             if(randomElementId){
-                                makeBoxInvisible(randomElementId);
+                                makeBoxInvisible(randomElementId,randomNumber);
                                 boxNbrValue--;
+                                randomNumber = 0;
                                 break;
                             }
                         }
-                        
                     }
-                    
-                    
                 }
-
-                console.log(randomNumber);
-                console.log(randomNumber);
-                // boxElement.remove();
-
             }
         }
     }
-    // If box value > 0, remove the selected box.  If box value > 1 then loop and randomly select a box to remove.
-    // Make all existing boxes clickable again.  Make the take button disappear.
 
+    
+
+    let boxesLeft = getListOfRemainingBoxes();
+
+    makeAllRemainingBoxesClickable(boxesLeft);
 }
 
-function takeClicked(boxValue){
+function takeClicked(){
     app.round++;
-    // Save the score.
-    // Delete all boxes.
+
+    let boxTitle = document.getElementById("round_title");
+    let clickedBox = document.getElementsByClassName("clicked")[0];
+    app.score = app.score + parseInt(clickedBox.innerHTML);
+    boxTitle.innerHTML = "";
+
+    removeAllChildNodes();
+
+    createBoardOnScreen(app.round);
+
     // If round not > 4, Repopulate the boxes with next round.
     // Else, determine if you won or not.
 
 }
 
-function makeBoxInvisible(randomElementId){
+function getListOfRemainingBoxes(){
+    let remainingBoxes = [];
+    let children = document.getElementById("game_box").children;
+    for (i=0;i<children.length;i++){
+        boxId = children[i].id;
+        if(boxId.includes("g")){
+            remainingBoxes.push(children[i].id);
+        }
+    }
+    return remainingBoxes;
+}
+
+function makeBoxInvisible(randomElementId,randomNumber){
     randomElementId.style.backgroundColor = "#F1B24A";
     randomElementId.textContent = "";
     randomElementId.id = "d"+randomNumber;
@@ -171,6 +190,16 @@ function makeAllOtherBoxesUnclickable(boxValue){
         if(boxes[i].id != clickedBoxId){
             document.getElementById(boxes[i].id).style.pointerEvents = "none"
         }
+    }
+}
+
+function makeAllRemainingBoxesClickable(boxesLeft){
+    let _boxesLeft = boxesLeft;
+    let boxId = "";
+
+    for(i=0;i<_boxesLeft.length;i++){
+        boxId = document.getElementById(_boxesLeft[i]);
+        boxId.style.pointerEvents = "auto";
     }
 }
 
@@ -241,6 +270,14 @@ function createBoardBoxes(){
         btnInput.addEventListener("click", firstTimeBoxClicked);
         btnInput.p = app.randomList[i];
     }
+}
+
+function removeAllChildNodes(){
+    let mainContainer = document.getElementById("game_box");
+    while(mainContainer.firstChild){
+        mainContainer.removeChild(mainContainer.firstChild);
+    }
+
 }
 
 function getIndex(_round,section){
