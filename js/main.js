@@ -4,6 +4,8 @@ const app = {
     ,boardSize:3
     ,totalPossibleScore:0
     ,score:0
+    ,scoreLastMaximum:0
+    ,scoreMaximum:1
     ,has_won:false
     ,result_message:""
     ,difficulty:1
@@ -12,19 +14,6 @@ const app = {
     ,randomList:[]
 }
 
-loadGame();
-
-function loadGame(){
-    loadMainScreenGUI();
-}
-
-function loadMainScreenGUI(){
-
-// load title "Lock or Go"
-// load 3 button difficulty 1="easy", 2="normal", 3="hard".  Clicking on this will initiate the game.
-// load "how to play" button.  This will hide the main screen, and load another div with instructions.  With a close button.
-    
-}
 
 app.d.getElementById("1").addEventListener("click", startGame);
 app.d.getElementById("2").addEventListener("click", startGame);
@@ -38,8 +27,6 @@ function startGame(difficultyNbr){
     createBoardOnScreen(app.round);
 }
 
-
-// Round 4 is done, run checkResults() to see if you won or not depending on difficulty.  Show score out of 22.  Win or Loose results.  Show "Return to Main Menu" button.
 
 function createBoardOnScreen(round){
     let _boardSize = app.boardSize;
@@ -148,23 +135,84 @@ function secondTimeBoxClicked(boxValue){
     makeAllRemainingBoxesClickable(boxesLeft);
 }
 
-function takeClicked(){
+function takeClicked(boxValue){
+    app.scoreMaximum = app.round + 1;
+    app.scoreMaximum = app.scoreMaximum + app.scoreLastMaximum;
+    app.scoreLastMaximum = app.scoreMaximum
     app.round++;
 
-    let boxTitle = document.getElementById("round_title");
-    let clickedBox = document.getElementsByClassName("clicked")[0];
+    if(app.round > 5){
+        clearBoard();
+        showMenuBtns(boxValue);
+    }
+    else{
+
+        let boxTitle = document.getElementById("round_title");
+        let clickedBox = document.getElementsByClassName("clicked")[0];
+        let scoreTitle = document.getElementById("current_score");
+        app.score = app.score + parseInt(clickedBox.innerHTML);
+        scoreTitle.innerHTML = "Score " + app.score;
+    
+        boxTitle.innerHTML = "";
+    
+        removeAllChildNodes();
+    
+        createBoardOnScreen(app.round);
+    }
+}
+
+function clearBoard(){
+    let roundTitle = document.getElementById("round_title");
+    let takeBtn = document.getElementById("take_btn");
+    let gameBox = document.getElementById("game_box");
+    takeBtn.style.display = "none";
+    roundTitle.style.display = "none";
+    gameBox.style.display = "none";
+
+}
+
+function showMenuBtns(boxValue){
+    let menuBtn = document.getElementById("return_btn");
+    let scoreclass = document.getElementsByClassName("clicked");
     let scoreTitle = document.getElementById("current_score");
-    app.score = app.score + parseInt(clickedBox.innerHTML);
+    let gameResults = document.getElementById("game_results");
+    let winLoseTitle = document.getElementById("win_lose_title");
+    let winLoseTitleTxt = "";
+    let scoreMinimum = 0;
+    
+    app.score = app.score + parseInt(scoreclass[0].innerHTML.replace("Score", ""));
     scoreTitle.innerHTML = "Score " + app.score;
 
-    boxTitle.innerHTML = "";
+    gameResults.style.display = "block";
+    gameResults.innerHTML = app.score + "/" + app.scoreMaximum;
+    
+    switch(app.difficulty){
+        case 1:
+            scoreMinimum = 10;
+            break;
+        case 2:
+            scoreMinimum = 13;
+            break;
+        case 3:
+            scoreMinimum = 17;
+            break;
+    }
 
-    removeAllChildNodes();
+    if(app.score >= scoreMinimum){
+        winLoseTitleTxt = "WIN"
+    }
+    else{
+        winLoseTitleTxt = "LOSE"
+    }
 
-    createBoardOnScreen(app.round);
+    winLoseTitle.style.display = "block";
+    winLoseTitle.innerHTML = "YOU " + winLoseTitleTxt;
 
-    // If round not > 4, Repopulate the boxes with next round.
-    // Else, determine if you won or not.
+    menuBtn.style.display = "block";
+
+
+
+
 
 }
 
