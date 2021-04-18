@@ -57,6 +57,8 @@ function firstTimeBoxClicked(boxValue){
     boxStyle.zIndex = "10";
     takeButton.style.display = "block";
 
+    takeButton.innerText = "Take " + boxElement.p;
+
     makeAllOtherBoxesUnclickable(boxValue);
 
     boxElement.addEventListener("click", secondTimeBoxClicked);
@@ -73,6 +75,9 @@ function secondTimeBoxClicked(boxValue){
     let randomNumber;
     let randomElementId = 0;
     let boxList = [];
+    let takeButton = document.getElementById("take_btn");
+
+    takeButton.innerText = "Take 0";
 
     boxElement.classList.remove("clicked");
 
@@ -82,49 +87,43 @@ function secondTimeBoxClicked(boxValue){
         boxElement.removeEventListener("click", secondTimeBoxClicked);
         boxElement.addEventListener("click", firstTimeBoxClicked);
     }
-    else if(boxNbrValue > 0){
+    else
+    {
         makeBoxInvisible(boxElement,boxNbrValue);
         boxNbrValue--;
         
         if(boxNbrValue > 0){
-            for(i=0;i<boxNbrValue;i++){
-                boxList = getListOfRemainingBoxes();
-                boxCurrentAmount = boxList.length;
-                randomNumber = ((Math.floor(Math.random() * boxCurrentAmount)) + (_round - 1))
-                if(randomNumber > 0) randomNumber--;
-                randomNumber = parseInt(boxList[randomNumber].replace("g",""));
+            
+                
 
-
-
-                for(e=0;e<boxCurrentAmount;e++){ 
+                for(e=0;e<boxNbrValue;e++){ 
+                    boxList = getListOfRemainingBoxes();
+                    if(boxList.length == 0) break;
+                    randomNumber = getRandomNbrFromList(boxList,_round);
                     randomElementId = document.getElementById("g"+randomNumber);
                     if(randomElementId){
                         makeBoxInvisible(randomElementId,randomNumber);
-                        boxNbrValue--;
-                        boxCurrentAmount = 0;
                     }
                     else{
-                        for(j=1;j<boxCurrentAmount - randomNumber;j++){
+                        for(j=1;j<boxList.length - randomNumber;j++){
                             randomElementId = document.getElementById("g"+randomNumber - j);
                             if(randomElementId){
                                 makeBoxInvisible(randomElementId,randomNumber);
-                                boxNbrValue--;
-                                boxCurrentAmount = 0;
+                                boxList.length = 0;
                                 break;
                             }
                         }
-                        for(o=1;i<randomNumber;o++){
+                        for(o=1;o<randomNumber+1;o++){
                             randomElementId = document.getElementById("g"+randomNumber + o);
                             if(randomElementId){
                                 makeBoxInvisible(randomElementId,randomNumber);
-                                boxNbrValue--;
                                 randomNumber = 0;
                                 break;
                             }
                         }
                     }
                 }
-            }
+            
         }
     }
 
@@ -133,6 +132,17 @@ function secondTimeBoxClicked(boxValue){
     let boxesLeft = getListOfRemainingBoxes();
 
     makeAllRemainingBoxesClickable(boxesLeft);
+}
+
+function getRandomNbrFromList(boxList,_round){
+    randomNbr = ((Math.floor(Math.random() * boxList.length)));
+    if(randomNbr > 0) randomNbr--;
+
+    console.log("Random Number: " +randomNbr);
+
+    randomNbr = parseInt(boxList[randomNbr].substring(1));
+    
+    return randomNbr;
 }
 
 function takeClicked(boxValue){
@@ -146,18 +156,19 @@ function takeClicked(boxValue){
         showMenuBtns(boxValue);
     }
     else{
-
+        
         let boxTitle = document.getElementById("round_title");
         let clickedBox = document.getElementsByClassName("clicked")[0];
         let scoreTitle = document.getElementById("current_score");
-        app.score = app.score + parseInt(clickedBox.innerHTML);
+        let takeButton = document.getElementById("take_btn");
+        app.score = app.score + parseInt(document.getElementById("take_btn").innerHTML.substring(5));
         scoreTitle.innerHTML = "Score " + app.score;
-    
         boxTitle.innerHTML = "";
     
         removeAllChildNodes();
     
         createBoardOnScreen(app.round);
+        takeButton.innerText = "Take 0";
     }
 }
 
@@ -218,11 +229,12 @@ function showMenuBtns(boxValue){
 
 function getListOfRemainingBoxes(){
     let remainingBoxes = [];
-    let children = document.getElementById("game_box").children;
-    for (i=0;i<children.length;i++){
-        boxId = children[i].id;
-        if(boxId.includes("g")){
-            remainingBoxes.push(children[i].id);
+    let childrenBoxes = document.getElementById("game_box");
+    let nodeId = "";
+    for(m=0;m<childrenBoxes.childNodes.length;m++){
+        nodeId = childrenBoxes.childNodes[m].id;
+        if(nodeId.includes("g")){
+            remainingBoxes.push(nodeId);
         }
     }
     return remainingBoxes;
@@ -285,21 +297,23 @@ function createRandomArray(boardLength, sortedList, _round){
 
     for(i=0;i<boardLength;i++){
         randomNbr = ((Math.floor(Math.random() * app.boardSize)) + (_round - 1))
+        
         let section = 0;
-        let foundNbr = 0;
+        let indexNbr = 0;
         remainingNbrs = sortedList.filter(onlyUnique);
         if(!remainingNbrs.includes(randomNbr)){
             i--;
             continue;
         }
-
-        for(e=0;e<app.boardSize;e++){
-            foundNbr = getIndex(_round,e);
-            if(sortedList.includes(foundNbr)){
-                transferIndexFromSortedToRandomList(foundNbr,sortedList);
-                break;
-            }
-        }
+        
+        
+            indexNbr = 0;
+            indexNbr = sortedList.indexOf(randomNbr);
+            
+                transferIndexFromSortedToRandomList(indexNbr,randomNbr,sortedList);
+            
+            
+        
     }
     return app.randomList;
 }
@@ -344,9 +358,9 @@ function onlyUnique(value, index, self){
     return self.indexOf(value) === index;
 }
 
-function transferIndexFromSortedToRandomList(foundNbr,sortedList){
-    sortedList.splice(sortedList.indexOf(foundNbr),1);
-    app.randomList.push(foundNbr);
+function transferIndexFromSortedToRandomList(indexNbr,randomNbr,sortedList){
+    sortedList.splice(indexNbr,1);
+    app.randomList.push(randomNbr);
 }
 
 function checkResults(){ // Pass in score and difficulty.
