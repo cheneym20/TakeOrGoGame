@@ -8,5 +8,5 @@ Be careful though, clicking through boxes and not "Taking" it will result in rem
 
 Game Development Purpose:
 
-The maximum points possible is 20.  On easy, you need to have 10 or higher points to win.  On Normal, you need 13 or more points to win.  On hard, you need 17 or more points to win.
+The maximum points possible is 25.  On easy, you need to have 18 or higher points to win.  On Normal, you need 22 or more points to win.  On hard, you need 25 to win.
 This project is only for javascript practice of understanding the manipulation of arrays.  And using arrays to changing the styling using the DOM.
