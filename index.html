@@ -23,7 +23,7 @@
 </head>
 
 <body>
-  <div style="padding:4px;">
+  <div style="padding:4px;display: none;">
     <div class="test clr1">#164a41</div>
     <div class="test clr2">#4D774E</div>
     <div class="test clr3">#9DC88D</div>
@@ -37,7 +37,7 @@
       
       <div class="header clr2">Take Or Go</div>
 
-      <div class="menu_details clr2">
+      <div id="menu_details" class="menu_details clr2">
         <div class="title">
           <span>A Game of Luck and Brains</span>
           <br />
@@ -46,17 +46,26 @@
         <div id="1" class="btn1">Easy</div>
         <div id="2" class="btn2">Normal</div>
         <div id="3" class="btn3">Hard</div>
-        <div class="btn_instruction">Instructions</div>
+        <div id="btn_instruction" class="btn_instruction">Instructions</div>
       </div>
 
+    </div>
+
+    <div id="instructions" class="instructions_container">
+      <div class="">
+        <p><span style="font-weight: bold;">Instructions: </span> <br /> <br />Win the game by adding numbers to your score. You have 7 Rounds and the highest total score possible is 42. <br /> <br /> Start by selecting a random box, you can either TAKE the number and add it to your score or attempt to select another number by clicking it again.  Be careful.  More boxes will disappear depending on what number you select. </p>
+        <div id="back_main_menu" class="back_main_menu">Main Menu</div>
+      </div>
     </div>
 
     <div id="game_screen" class="game_screen">
 
       <div id="round_title" class="round_title"></div>
+      <div id="high_number_title" class="high_number_title"></div>
       <div id="game_box" class="main clr4"></div>
       <div id="take_btn" class="take_btn">Take</div>
       <div id="current_score" class="current_score">Score: 0</div>
+      <div id="return_btn" class="return_btn">Main Menu</div>
       
     </div>
 

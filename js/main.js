@@ -18,6 +18,30 @@ const app = {
 app.d.getElementById("1").addEventListener("click", startGame);
 app.d.getElementById("2").addEventListener("click", startGame);
 app.d.getElementById("3").addEventListener("click", startGame);
+app.d.getElementById("btn_instruction").addEventListener("click", showInstructions);
+
+function showInstructions(){
+    let mainMenu = document.getElementById("menu_details");
+    let instructionsBox = document.getElementById("instructions");
+    let backMainMenu = document.getElementById("back_main_menu");
+
+    mainMenu.style.display = "none";
+    instructionsBox.style.display = "block";
+    backMainMenu.addEventListener("click", returnToMainMenu);
+
+
+
+
+}
+
+function returnToMainMenu(){
+    let mainDetails = document.getElementById("menu_details");
+    let instructionsBox = document.getElementById("instructions");
+
+    instructionsBox.style.display = "none";
+    mainDetails.style.display = "grid";
+    
+}
 
 function startGame(difficultyNbr){
 
@@ -34,6 +58,12 @@ function startGame(difficultyNbr){
 function navToMenu(){
     document.getElementById("current_score").style.display = "none";
     document.getElementById("end_result").style.display = "none";
+    document.getElementById("round_title").style.display = "none";
+    document.getElementById("high_number_title").style.display = "none";
+    document.getElementById("game_box").style.display = "none";
+    document.getElementById("end_result").style.display = "none";
+    document.getElementById("take_btn").style.display = "none";
+    document.getElementById("return_btn").style.display = "none";
 
     document.getElementById("main_menu").style.display = "block";
 }
@@ -49,15 +79,35 @@ function createBoardOnScreen(round){
     let boardLength = _boardSize * _boardSize;
     let _round = round;
     let scoreTitle = document.getElementById("current_score");
+    let highestNbr = 0;
+    let takeButton = document.getElementById("take_btn");
+    takeButton.style.display = "block";
     scoreTitle.style.display = "block";
+    takeButton.innerText = "Take 0";
+    takeButton.addEventListener("click", takeClicked);
+
     scoreTitle.innerHTML = "Score " + app.score;
     let sortedList = [];
     app.randomList = [];
 
     createRoundTitle(_round);
     sortedList = createSortedList(sortedList, boardLength, _boardSize, _round);
+    highestNbr = Math.max.apply(null,sortedList);
     app.randomList = createRandomArray(boardLength, sortedList, _round);
+    createHighestNumberTitle(highestNbr);
     createBoardBoxes();
+
+    let menuBtn = document.getElementById("return_btn");
+    menuBtn.style.display = "block";
+    menuBtn.addEventListener("click", navToMenu);
+
+}
+
+function createHighestNumberTitle(highestNbr){
+    let _highestNbr = highestNbr;
+    let highTitle = document.getElementById("high_number_title");
+    highTitle.style.display = "block";
+    highTitle.innerText = `Highest Number: ${_highestNbr}`;
 
 }
 
@@ -166,7 +216,7 @@ function takeClicked(boxValue){
     app.scoreLastMaximum = app.scoreMaximum
     app.round++;
 
-    if(app.round > 5){
+    if(app.round > 7){
         clearBoard();
         showMenuBtns(boxValue);
     }
@@ -191,7 +241,9 @@ function clearBoard(){
     let roundTitle = document.getElementById("round_title");
     let takeBtn = document.getElementById("take_btn");
     let gameBox = document.getElementById("game_box");
+    let highTitle = document.getElementById("high_number_title");
     takeBtn.style.display = "none";
+    highTitle.style.display = "none";
     roundTitle.style.display = "none";
     gameBox.style.display = "none";
 
@@ -215,13 +267,13 @@ function showMenuBtns(boxValue){
     
     switch(app.difficulty){
         case "1":
-            scoreMinimum = 18;
+            scoreMinimum = 27;
             break;
         case "2":
-            scoreMinimum = 22;
+            scoreMinimum = 35;
             break;
         case "3":
-            scoreMinimum = 25;
+            scoreMinimum = 40;
             break;
     }
 
@@ -231,6 +283,9 @@ function showMenuBtns(boxValue){
     else{
         winLoseTitleTxt = "LOSE"
     }
+
+    let endResultBox = document.getElementById("end_result");
+    endResultBox.style.display = "block";
 
     winLoseTitle.style.display = "block";
     winLoseTitle.innerHTML = "YOU " + winLoseTitleTxt;

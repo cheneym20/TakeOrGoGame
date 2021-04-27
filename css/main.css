@@ -97,15 +97,21 @@ fieldset {
 textarea {
   resize: vertical;
 }
+
+.main_container{
+  margin-top:25px;
+}
+
 .header{
-  font-size:20px;
-  height:40px;
+  font-size: 63px;
+  height: 95px;
   color:white;
   margin: 0px auto;
   text-align: center;
   width: 25%;
   min-width: 242px;
   padding-top: 8px;
+  cursor:context-menu;
 }
 
 .menu_details{
@@ -119,13 +125,46 @@ textarea {
   align-items: center;
   border: 20px solid #F1B24A;
   border-radius: 5px;
-  column-gap: 5px;
+  column-gap: 3px;
   padding-left: 3px;
+  padding-bottom: 2px;
 }
+
+.back_main_menu{
+  border: 1px black solid;
+  margin: 0 auto;
+  width: 181px;
+  height: 48px;
+  text-align: center;
+  background-color: #9DC88D;
+  cursor: pointer;
+  transition-timing-function: ease-out;
+  transition-duration: 0.25s;
+  padding-top: 8px;
+  font-size: 28px;
+}
+.back_main_menu:hover{
+  background-color: white;
+}
+
+.instructions_container{
+  display: none;
+  border: 20px solid #F1B24A;
+  border-radius: 5px;
+  padding-left: 3px;
+  padding-bottom: 2px;
+  min-width: 242px;
+  margin:0px auto;
+  width:25%;
+  cursor: context-menu;
+  text-align: center;
+  padding:20px;
+}
+
 
 .btn1, .btn2, .btn3, .btn_instruction, .title{
   text-align: center;
-  border: 2px solid blue;
+  border: 2px solid #164a41;
   padding: 34px 0px 34px 0px;
   cursor: pointer;
   transition-timing-function: ease-out;
@@ -201,7 +240,7 @@ textarea {
   display:none;
 }
 
-.take_btn, .round_title, .current_score, .return_btn, .win_lose_title, .game_results{
+.take_btn, .round_title, .current_score, .return_btn, .win_lose_title, .game_results, .high_number_title{
   margin:0 auto;
   width:200px;
   height:40px;
@@ -209,10 +248,16 @@ textarea {
   text-align: center;
   color: white;
   padding-bottom: 16px;
-  font-size: 40px;
+  font-size: 38px;
   cursor: pointer;
   transition-timing-function: ease-out;
   transition-duration: 0.25s;
+}
+
+.high_number_title{
+  width:400px;
+  margin-top:5px;
+  cursor: context-menu;
 }
 
 .take_btn, .current_score{
@@ -221,20 +266,26 @@ textarea {
 
 .current_score{
   margin-top:10px;
+  cursor: context-menu;
 }
 
 .round_title{
   cursor: default;
 }
 
+.win_lose_title, .game_results{
+  cursor:context-menu;
+}
 .return_btn, .win_lose_title, .game_results{
   display: none;
   margin-top:10px;
 }
-
-.take_btn:hover{
+.take_btn, .return_btn{
+  background-color: #9DC88D
+}
+.take_btn:hover, .return_btn:hover{
   background-color:#F1B24A;
-  color:black;
+  color:#164a41;
 }
 
 /* ==========================================================================
